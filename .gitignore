@@ -1,0 +1,50 @@
+# node_modules
+node_modules/
+mobile/node_modules/
+
+# Expo
+.expo/
+mobile/.expo/
+mobile/dist/
+mobile/web-build/
+mobile/expo-env.d.ts
+
+# Maven
+target/
+backend/target/
+.mvn/
+backend/.mvn/
+mvnw
+mvnw.cmd
+backend/mvnw
+backend/mvnw.cmd
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# generated native folders
+mobile/ios
+mobile/android
+
+# OS
+.DS_Store
+Thumbs.db
+
+# local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
