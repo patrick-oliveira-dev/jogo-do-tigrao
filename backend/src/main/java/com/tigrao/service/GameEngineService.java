@@ -31,9 +31,17 @@ public class GameEngineService {
 
     @Transactional
     public GameRoom createRoom(String roomCode, String hostName) {
-        if (roomRepo.existsById(roomCode)) {
-            throw new RuntimeException("A sala " + roomCode + " já existe!");
-        }
+        roomRepo.findById(roomCode).ifPresent(r -> {
+            boolean isFinished = r.getStatus() == GameStatus.FINISHED || r.getStatus() == GameStatus.CLOSED;
+            boolean isEmpty = r.getPlayers().isEmpty();
+
+            if (!isFinished && !isEmpty) {
+                throw new RuntimeException("A sala " + roomCode + " ainda está em andamento!");
+            }
+            // Se já terminou, fechou ou está vazia (ghost room), deletamos
+            roomRepo.delete(r);
+        });
+
         GameRoom room = new GameRoom(roomCode);
         Player host = new Player(hostName);
         host.setIsHost(true);
@@ -99,12 +107,12 @@ public class GameEngineService {
         if (hitSide && hitNumber) {
             int winnings = betReq.getAmount() * 2;
             player.setBalance(player.getBalance() + winnings);
-            room.setBankBalance(room.getBankBalance() - winnings);
+            room.setBankBalance(Math.max(0, room.getBankBalance() - winnings));
             resultMsg += player.getName() + " acertou lado e número! Ganhou " + winnings;
         } else if (hitSide && !hitNumber) {
             int winnings = betReq.getAmount();
             player.setBalance(player.getBalance() + winnings);
-            room.setBankBalance(room.getBankBalance() - winnings);
+            room.setBankBalance(Math.max(0, room.getBankBalance() - winnings));
             resultMsg += player.getName() + " acertou o lado. Ganhou " + winnings;
         } else if (!hitSide && hitNumber) {
             resultMsg += player.getName() + " errou o lado mas acertou o número da sorte. Não perde nada!";
